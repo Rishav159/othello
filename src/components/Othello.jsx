@@ -46,7 +46,8 @@ export const Othello = () => {
   const cursorType = (row, col) => {
     return othelloGame.board[row][col].takenBy ? "auto" : "pointer";
   };
-  
+  const isEnded = othelloGame.status === "ENDED";
+  const isDraw = isEnded && !othelloGame.winner;
   return (
     <div>
       <h1>Othello</h1>
@@ -74,6 +75,10 @@ export const Othello = () => {
               ))}
             </div>
           ))}
+        </div>
+        <div className="game-status">
+          {isEnded && isDraw && <div className="draw-block">Game is Drawn</div>}
+          {isEnded && !isDraw && <div className="winner-block">{`${othelloGame.winner} is the winner`}</div>}
         </div>
       </div>
     </div>
