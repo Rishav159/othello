@@ -55,7 +55,6 @@ const MAX_COLS = 8;
     if(cellsToFlip.length === 0) {
       return;
     }
-
     cell.acquire(currentPlayer);
     cellsToFlip.forEach(cell => {
       cell.flipTo(currentPlayer);
