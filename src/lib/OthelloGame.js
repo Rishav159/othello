@@ -1,17 +1,17 @@
-const Players = {
+export const Players = {
   BLACK: "black",
   WHITE: "white",
 };
 const MAX_ROWS = 8;
 const MAX_COLS = 8;
-class Cell {
+export class Cell {
   constructor() {
     this.taken = false;
-    this.takenBy = false;
+    this.takenBy = null;
   }
   acquire(player) {
     if (this.taken) {
-      throw new Error("This cell is already taken by ", Cell.takenBy);
+      throw new Error("This cell is already taken by ", this.takenBy);
     }
     this.taken = true;
     this.takenBy = player;
@@ -20,11 +20,11 @@ class Cell {
     if (!this.taken) {
       throw new Error("This cell is not taken, so cannot flip to ", player);
     }
-    this.takenBy = player === Players.BLACK ? Players.WHITE : Players.BLACK;
+    this.takenBy = player;
   }
 }
 
-class OthelloGame {
+export class OthelloGame {
   constructor() {
     this.currentTurn = Players.WHITE;
     this.board = Array.from({ length: MAX_ROWS }, () => {
@@ -136,4 +136,3 @@ class OthelloGame {
   }
 }
 
-module.exports = OthelloGame;
