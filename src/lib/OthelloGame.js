@@ -44,6 +44,7 @@ export class OthelloGame {
     this.history = [];
     this.playableCells = {};
     this.calculatePlayableCells(this.currentTurn);
+    this.status = "ACTIVE";
   }
   flipPlayer() {
     this.currentTurn = this.otherPlayer();
@@ -65,11 +66,43 @@ export class OthelloGame {
       }
     }
   }
+  checkEndGame() {
+    let cellsRemaining = 0;
+    let blackCount = 0;
+    let whiteCount = 0;
+    for(let i = 0; i < MAX_ROWS; i++) {
+      for(let j = 0; j < MAX_COLS; j++) {
+        let cell = this.board[i][j];
+        if(!cell.taken) {
+          cellsRemaining += 1;
+        } else {
+          if(cell.takenBy === Players.BLACK) {
+            blackCount += 1;
+          } else {
+            whiteCount += 1;
+          }
+        }
+      }
+    }
+    if(cellsRemaining === 0) {
+      this.status = "ENDED";
+      if(blackCount > whiteCount) {
+        this.winner = Players.BLACK
+      } else if(whiteCount > blackCount) {
+        this.winner = Players.WHITE;
+      } else {
+        this.winner = null;
+      }
+    }
+  }
   playCell(i, j) {
     const cell = this.board[i][j];
     const currentPlayer = this.currentTurn;
     if (cell.taken) {
       throw new Error("This cell is already taken by ", cell.takenBy);
+    }
+    if(this.status !== "ACTIVE") {
+      throw new Error("This game is not active anymore");
     }
     if(!this.playableCells[i+"_"+j]) {
       return;
@@ -85,6 +118,7 @@ export class OthelloGame {
     } else {
       this.calculatePlayableCells(currentPlayer);
     }
+    this.checkEndGame();
   }
 
   initiateFlipsFrom(startI, startJ, player) {
