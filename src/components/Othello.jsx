@@ -46,7 +46,7 @@ export const Othello = () => {
   const cursorType = (row, col) => {
     return othelloGame.board[row][col].takenBy ? "auto" : "pointer";
   };
-
+  
   return (
     <div>
       <h1>Othello</h1>

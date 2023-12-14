@@ -5,9 +5,11 @@ export const Players = {
 const MAX_ROWS = 8;
 const MAX_COLS = 8;
 class Cell {
-  constructor() {
+  constructor(i, j) {
     this.taken = false;
     this.takenBy = null;
+    this.i = i;
+    this.j = j;
   }
   acquire(player) {
     if (this.taken) {
@@ -27,11 +29,14 @@ class Cell {
 export class OthelloGame {
   constructor() {
     this.currentTurn = Players.WHITE;
-    this.board = Array.from({ length: MAX_ROWS }, () => {
-      return Array.from({ length: MAX_COLS }, () => {
-        return new Cell();
-      });
-    });
+    this.board = [];
+    for(let i = 0; i < MAX_ROWS; i++) {
+      let row = [];
+      for(let j = 0; j < MAX_COLS; j++) {
+        row.push(new Cell(i, j));
+      }
+      this.board.push(row)
+    }
     this.board[3][3].acquire(Players.BLACK);
     this.board[3][4].acquire(Players.WHITE);
     this.board[4][3].acquire(Players.WHITE);
@@ -54,7 +59,7 @@ export class OthelloGame {
         if(!cell.taken) {
           const cellsToFlip = this.initiateFlipsFrom(i, j, player);
           if(cellsToFlip.length) {
-            this.playableCells[i+"_"+j] = cellsToFlip;
+            this.playableCells[i+"_"+j] = true;
           }
         }
       }
@@ -69,7 +74,7 @@ export class OthelloGame {
     if(!this.playableCells[i+"_"+j]) {
       return;
     }
-    const cellsToFlip = this.playableCells[i+"_"+j];
+    const cellsToFlip = this.initiateFlipsFrom(i, j, currentPlayer);
     cell.acquire(currentPlayer);
     cellsToFlip.forEach((cell) => {
       cell.flipTo(currentPlayer);
