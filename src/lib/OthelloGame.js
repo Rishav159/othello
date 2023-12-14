@@ -1,10 +1,10 @@
- const Players = {
+export const Players = {
   BLACK: "black",
   WHITE: "white",
 };
 const MAX_ROWS = 8;
 const MAX_COLS = 8;
- class Cell {
+class Cell {
   constructor() {
     this.taken = false;
     this.takenBy = null;
@@ -24,7 +24,7 @@ const MAX_COLS = 8;
   }
 }
 
- class OthelloGame {
+export class OthelloGame {
   constructor() {
     this.currentTurn = Players.WHITE;
     this.board = Array.from({ length: MAX_ROWS }, () => {
@@ -50,13 +50,14 @@ const MAX_COLS = 8;
     if (cell.taken) {
       throw new Error("This cell is already taken by ", cell.takenBy);
     }
-    
+
     const cellsToFlip = this.initiateFlipsFrom(i, j);
-    if(cellsToFlip.length === 0) {
+    console.log(cellsToFlip)
+    if (cellsToFlip.length === 0) {
       return;
     }
     cell.acquire(currentPlayer);
-    cellsToFlip.forEach(cell => {
+    cellsToFlip.forEach((cell) => {
       cell.flipTo(currentPlayer);
     });
     this.flipPlayer();
@@ -71,10 +72,11 @@ const MAX_COLS = 8;
     toFlip = [];
     for (let j = startJ - 1; j >= 0; j--) {
       const cell = this.board[startI][j];
+      console.log(startI, j, player, cell.takenBy)
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -87,7 +89,7 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -100,7 +102,7 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -126,7 +128,7 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -139,7 +141,7 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -152,7 +154,7 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
@@ -169,13 +171,13 @@ const MAX_COLS = 8;
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
-        cellsToFlip.concat(toFlip)
+        cellsToFlip = cellsToFlip.concat(toFlip);
         break;
       } else {
         break;
       }
     }
-    
+
     return cellsToFlip;
   }
 }
