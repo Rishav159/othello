@@ -37,6 +37,8 @@ export class OthelloGame {
     this.board[4][3].acquire(Players.WHITE);
     this.board[4][4].acquire(Players.BLACK);
     this.history = [];
+    this.playableCells = {};
+    this.calculatePlayableCells(this.currentTurn);
   }
   flipPlayer() {
     this.currentTurn = this.otherPlayer();
@@ -44,35 +46,50 @@ export class OthelloGame {
   otherPlayer() {
     return this.currentTurn === Players.BLACK ? Players.WHITE : Players.BLACK;
   }
+  calculatePlayableCells(player) {
+    this.playableCells = {};
+    for(let i = 0; i < MAX_ROWS; i++) {
+      for(let j = 0; j < MAX_COLS; j++) {
+        let cell = this.board[i][j];
+        if(!cell.taken) {
+          const cellsToFlip = this.initiateFlipsFrom(i, j, player);
+          if(cellsToFlip.length) {
+            this.playableCells[i+"_"+j] = cellsToFlip;
+          }
+        }
+      }
+    }
+  }
   playCell(i, j) {
     const cell = this.board[i][j];
     const currentPlayer = this.currentTurn;
     if (cell.taken) {
       throw new Error("This cell is already taken by ", cell.takenBy);
     }
-
-    const cellsToFlip = this.initiateFlipsFrom(i, j);
-    console.log(cellsToFlip)
-    if (cellsToFlip.length === 0) {
+    if(!this.playableCells[i+"_"+j]) {
       return;
     }
+    const cellsToFlip = this.playableCells[i+"_"+j];
     cell.acquire(currentPlayer);
     cellsToFlip.forEach((cell) => {
       cell.flipTo(currentPlayer);
     });
-    this.flipPlayer();
+    this.calculatePlayableCells(this.otherPlayer());
+    if(Object.keys(this.playableCells).length > 0) {
+      this.flipPlayer();
+    } else {
+      this.calculatePlayableCells(currentPlayer);
+    }
   }
 
-  initiateFlipsFrom(startI, startJ) {
-    const player = this.currentTurn;
-    const otherPlayer = this.otherPlayer();
+  initiateFlipsFrom(startI, startJ, player) {
+    const otherPlayer = player === Players.BLACK ? Players.WHITE : Players.BLACK;
     let cellsToFlip = [];
     let toFlip = [];
     // Left
     toFlip = [];
     for (let j = startJ - 1; j >= 0; j--) {
       const cell = this.board[startI][j];
-      console.log(startI, j, player, cell.takenBy)
       if (cell.taken && cell.takenBy === otherPlayer) {
         toFlip.push(cell);
       } else if (cell.taken && cell.takenBy === player) {
