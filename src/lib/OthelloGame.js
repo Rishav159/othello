@@ -11,7 +11,7 @@ class Cell {
   }
   acquire(player) {
     if (this.taken) {
-      throw new Error("This cell is already taken by ", cell.takenBy);
+      throw new Error("This cell is already taken by ", Cell.takenBy);
     }
     this.taken = true;
     this.takenBy = player;
