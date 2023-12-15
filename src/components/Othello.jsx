@@ -5,8 +5,17 @@ import { deepClone } from "../helpers";
 
 export const Othello = () => {
   const [othelloGame, setOthelloGame] = useState(new OthelloGame());
+  const [hoveredCell, setHoveredCell] = useState(null);
 
-  const getCellStyle = (player) => {
+  const handleMouseEnter = (rowIndex, colIndex) => {
+    setHoveredCell({ rowIndex, colIndex });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredCell(null);
+  };
+
+  const getCellStyle = (player, i, j) => {
     if (player === Players.BLACK)
       return {
         backgroundColor: "black",
@@ -17,7 +26,18 @@ export const Othello = () => {
         backgroundColor: "white",
         boxShadow: "0 0 10px black",
       };
-    return {};
+    return {
+      backgroundColor:
+        hoveredCell?.rowIndex === i && hoveredCell?.colIndex === j
+          ? othelloGame.currentTurn.toLowerCase()
+          : "transparent",
+      opacity:
+        othelloGame.playableCells[i + "_" + j] &&
+        hoveredCell?.rowIndex === i &&
+        hoveredCell?.colIndex === j
+          ? 0.5
+          : 0,
+    };
   };
 
   const getPlayerStyle = (player) => {
@@ -44,8 +64,12 @@ export const Othello = () => {
   };
 
   const cursorType = (row, col) => {
-    return othelloGame.board[row][col].takenBy ? "auto" : "pointer";
+    return !othelloGame.playableCells[row + "_" + col] ||
+      othelloGame.board[row][col].takenBy
+      ? "auto"
+      : "pointer";
   };
+
   const isEnded = othelloGame.status === "ENDED";
   const isDraw = isEnded && !othelloGame.winner;
   return (
@@ -65,12 +89,17 @@ export const Othello = () => {
                 <div
                   key={colIndex}
                   className="grid-cell"
-                  style={{ cursor: cursorType(rowIndex, colIndex) }}
+                  style={{
+                    cursor: cursorType(rowIndex, colIndex),
+                  }}
                   onClick={() => handleClick(rowIndex, colIndex)}
+                  onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  <div className="circle" style={getCellStyle(cell.takenBy)}>
-                    {/* {rowIndex} {colIndex} */}
-                  </div>
+                  <div
+                    className="circle"
+                    style={getCellStyle(cell.takenBy, rowIndex, colIndex)}
+                  ></div>
                 </div>
               ))}
             </div>
@@ -78,7 +107,9 @@ export const Othello = () => {
         </div>
         <div className="game-status">
           {isEnded && isDraw && <div className="draw-block">Game is Drawn</div>}
-          {isEnded && !isDraw && <div className="winner-block">{`${othelloGame.winner} is the winner`}</div>}
+          {isEnded && !isDraw && (
+            <div className="winner-block">{`${othelloGame.winner} is the winner`}</div>
+          )}
         </div>
       </div>
     </div>
