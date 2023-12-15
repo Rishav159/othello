@@ -2,10 +2,13 @@ import { useState } from "react";
 import { OthelloGame, Players } from "../lib/OthelloGame";
 import "./othello.css";
 import { deepClone } from "../helpers";
+import { MdRefresh } from "react-icons/md";
+import { DialogBox } from "./Dialog";
 
 export const Othello = () => {
   const [othelloGame, setOthelloGame] = useState(new OthelloGame());
   const [hoveredCell, setHoveredCell] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleMouseEnter = (rowIndex, colIndex) => {
     setHoveredCell({ rowIndex, colIndex });
@@ -13,6 +16,10 @@ export const Othello = () => {
 
   const handleMouseLeave = () => {
     setHoveredCell(null);
+  };
+
+  const restartGame = () => {
+    setOthelloGame(new OthelloGame());
   };
 
   const getCellStyle = (player, i, j) => {
@@ -48,8 +55,8 @@ export const Othello = () => {
       };
     if (player === Players.WHITE)
       return {
-        backgroundColor: "black",
-        color: "white",
+        backgroundColor: "white",
+        color: "black",
       };
     return {};
   };
@@ -70,17 +77,30 @@ export const Othello = () => {
       : "pointer";
   };
 
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   const isEnded = othelloGame.status === "ENDED";
   const isDraw = isEnded && !othelloGame.winner;
   return (
     <div>
-      <h1>Othello</h1>
-      <h2>
-        Player Turn{" "}
-        <span style={getPlayerStyle(othelloGame.currentTurn)}>
-          {othelloGame.currentTurn.toUpperCase()}
-        </span>
-      </h2>
+      <div className="header-container">
+        <h1>Othello</h1>
+        <h2>
+          Player Turn{" "}
+          <span style={getPlayerStyle(othelloGame.currentTurn)}>
+            {othelloGame.currentTurn.toUpperCase()}
+          </span>
+        </h2>
+        <div>
+          <MdRefresh className="restart-button" onClick={handleOpenDialog} />
+        </div>
+      </div>
       <div style={{ width: "100%" }}>
         <div className="grid-container">
           {Array.from(othelloGame.board).map((row, rowIndex) => (
@@ -112,6 +132,16 @@ export const Othello = () => {
           )}
         </div>
       </div>
+      <DialogBox
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        title="Restart"
+        content="Are you sure?"
+        onConfirm={() => {
+          restartGame()
+          handleCloseDialog()
+        }}
+      />
     </div>
   );
 };
